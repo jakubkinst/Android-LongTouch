@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/root"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+
+	<android.support.v4.widget.NestedScrollView
+		android:id="@+id/scroll_view"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:background="?android:windowBackground"
+			android:orientation="vertical"
+			tools:context=".MainActivity">
+
+			<android.support.v7.widget.Toolbar
+				android:id="@+id/toolbar"
+				android:layout_width="match_parent"
+				android:layout_height="?actionBarSize"
+				android:background="@color/colorPrimary"/>
+
+			<TextView
+				android:id="@+id/text1"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut eget sodales justo. Nam finibus suscipit dolor, eu auctor felis vulputate nec. Cravel blandielementum erat. Fusce hendrerit, risus non lacinia imperdiet, metus ante rutrum sem, eget semper ligula nunc sed tellus. Sed porta semper sem at interdum. Nam porttitor est in rhoncus egestas. Vestibulum id pulvinar augue. Praesent sodales condimentum risus, congue tincidunt quam tristique et. Nam at finibus orci."/>
+
+			<Button
+				android:id="@+id/target"
+				android:layout_width="match_parent"
+				android:layout_height="100dp"
+				android:layout_gravity="center"
+				android:text="Click me!"/>
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut eget sodales justo. Nam finibus suscipit dolor, eu auctor felis vulputate nec. Cras ac ultricies quam. Proin ut hendrerit dui. Nunc tincidunt nisi ut pulvinar feugiat. Quisque vel blandit ante. Proin eu tellus convallis, dignissim augue nec, elementum erat. Fusce hendrerit, risus non lacinia imperdiet, metus ante rutrum sem, eget semper ligula nunc sed tellus. Sed porta semper sem at interdum. Nam porttitor est in rhoncus egestas. Vestibulum id pulvinar augue. Praesent sodales condimentum risus, congue tincidunt quam tristique et. Nam at finibus orci."/>
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut eget sodales justo. Nam finibus suscipit dolor, eu auctor felis vulputate nec. Cras ac ultricies quam. Proin ut hendrerit dui. Nunc tincidunt nisi ut pulvinar feugiat. Quisque vel blandit ante. Proin eu tellus convallis, dignissim augue nec, elementum erat. Fusce hendrerit, risus non lacinia imperdiet, metus ante rutrum sem, eget semper ligula nunc sed tellus. Sed porta semper sem at interdum. Nam porttitor est in rhoncus egestas. Vestibulum id pulvinar augue. Praesent sodales condimentum risus, congue tincidunt quam tristique et. Nam at finibus orci."/>
+
+			<Button
+				android:id="@+id/target2"
+				android:layout_width="match_parent"
+				android:layout_height="100dp"
+				android:layout_gravity="center"
+				android:text="Click me!"/>
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut eget sodales justo. Nam finibus suscipit dolor, eu auctor felis vulputate nec. Cras ac ultricies quam. Proin ut hendrerit dui. Nunc tincidunt nisi ut pulvinar feugiat. Quisque vel blandit ante. Proin eu tellus convallis, dignissim augue nec, elementum erat. Fusce hendrerit, risus non lacinia imperdiet, metus ante rutrum sem, eget semper ligula nunc sed tellus. Sed porta semper sem at interdum. Nam porttitor est in rhoncus egestas. Vestibulum id pulvinar augue. Praesent sodales condimentum risus, congue tincidunt quam tristique et. Nam at finibus orci."/>
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut eget sodales justo. Nam finibus suscipit dolor, eu auctor felis vulputate nec. Cras ac ultricies quam. Proin ut hendrerit dui. Nunc tincidunt nisi ut pulvinar feugiat. Quisque vel blandit ante. Proin eu tellus convallis, dignissim augue nec, elementum erat. Fusce hendrerit, risus non lacinia imperdiet, metus ante rutrum sem, eget semper ligula nunc sed tellus. Sed porta semper sem at interdum. Nam porttitor est in rhoncus egestas. Vestibulum id pulvinar augue. Praesent sodales condimentum risus, congue tincidunt quam tristique et. Nam at finibus orci."/>
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut eget sodales justo. Nam finibus suscipit dolor, eu auctor felis vulputate nec. Cras ac ultricies quam. Proin ut hendrerit dui. Nunc tincidunt nisi ut pulvinar feugiat. Quisque vel blandit ante. Proin eu tellus convallis, dignissim augue nec, elementum erat. Fusce hendrerit, risus non lacinia imperdiet, metus ante rutrum sem, eget semper ligula nunc sed tellus. Sed porta semper sem at interdum. Nam porttitor est in rhoncus egestas. Vestibulum id pulvinar augue. Praesent sodales condimentum risus, congue tincidunt quam tristique et. Nam at finibus orci."/>
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut eget sodales justo. Nam finibus suscipit dolor, eu auctor felis vulputate nec. Cras ac ultricies quam. Proin ut hendrerit dui. Nunc tincidunt nisi ut pulvinar feugiat. Quisque vel blandit ante. Proin eu tellus convallis, dignissim augue nec, elementum erat. Fusce hendrerit, risus non lacinia imperdiet, metus ante rutrum sem, eget semper ligula nunc sed tellus. Sed porta semper sem at interdum. Nam porttitor est in rhoncus egestas. Vestibulum id pulvinar augue. Praesent sodales condimentum risus, congue tincidunt quam tristique et. Nam at finibus orci."/>
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut eget sodales justo. Nam finibus suscipit dolor, eu auctor felis vulputate nec. Cras ac ultricies quam. Proin ut hendrerit dui. Nunc tincidunt nisi ut pulvinar feugiat. Quisque vel blandit ante. Proin eu tellus convallis, dignissim augue nec, elementum erat. Fusce hendrerit, risus non lacinia imperdiet, metus ante rutrum sem, eget semper ligula nunc sed tellus. Sed porta semper sem at interdum. Nam porttitor est in rhoncus egestas. Vestibulum id pulvinar augue. Praesent sodales condimentum risus, congue tincidunt quam tristique et. Nam at finibus orci."/>
+
+		</LinearLayout>
+	</android.support.v4.widget.NestedScrollView>
+
+</FrameLayout>
+
