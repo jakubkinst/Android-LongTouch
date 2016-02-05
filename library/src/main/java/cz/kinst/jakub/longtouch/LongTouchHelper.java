@@ -112,13 +112,6 @@ public class LongTouchHelper {
 	}
 
 
-	public int getStatusBarHeight() {
-		int[] location = new int[2];
-		mContainer.getLocationInWindow(location);
-		return location[1];
-	}
-
-
 	public boolean isBlurEnabled() {
 		return mBlurEnabled;
 	}
@@ -233,6 +226,19 @@ public class LongTouchHelper {
 			}
 		});
 		return this;
+	}
+
+
+	public void removeViewPopup(View target) {
+		mPopupContents.remove(target);
+		mPopupVisible.remove(target);
+	}
+
+
+	private int getStatusBarHeight() {
+		int[] location = new int[2];
+		mContainer.getLocationInWindow(location);
+		return location[1];
 	}
 
 

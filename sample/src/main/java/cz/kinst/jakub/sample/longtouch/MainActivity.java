@@ -26,7 +26,6 @@ public class MainActivity extends AppCompatActivity {
 			}
 		});
 		final LongTouchHelper helper = LongTouchHelper.setup((FrameLayout) findViewById(R.id.root));
-		helper.setRevealEffectEnabled(false);
 		helper.protectTouchOnViews(findViewById(R.id.scroll_view));
 		helper.addViewPopup(findViewById(R.id.target), LayoutInflater.from(this).inflate(R.layout.popup_hello, null));
 		helper.addViewPopup(findViewById(R.id.target2), LayoutInflater.from(this).inflate(R.layout.popup_hello, null));
