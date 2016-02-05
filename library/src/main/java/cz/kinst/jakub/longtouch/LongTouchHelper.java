@@ -257,6 +257,11 @@ public class LongTouchHelper {
 	private void show(View target) {
 		if(isPopupVisible(target)) return;
 		final View popupContent = mPopupContents.get(target);
+		if(isBlurEnabled()) {
+			((ImageView) popupContent.findViewById(R.id.blur_container)).setImageBitmap(BlurUtility.getBlurredViewBitmap(getViewToBlur(), getBlurRadius()));
+			popupContent.findViewById(R.id.blur_container).setAlpha(0);
+			popupContent.findViewById(R.id.blur_container).animate().alpha(1f).setDuration(BLUR_ANIMATION_DURATION).start();
+		}
 		mContainer.addView(popupContent);
 		popupContent.setFocusable(true);
 		mPopupVisible.put(target, true);
@@ -270,13 +275,6 @@ public class LongTouchHelper {
 		});
 		if(isHapticFeedbackEnabled())
 			target.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-
-
-		if(isBlurEnabled()) {
-			((ImageView) popupContent.findViewById(R.id.blur_container)).setImageBitmap(BlurUtility.getBlurredViewBitmap(getViewToBlur(), getBlurRadius()));
-			popupContent.findViewById(R.id.blur_container).setAlpha(0);
-			popupContent.findViewById(R.id.blur_container).animate().alpha(1f).setDuration(BLUR_ANIMATION_DURATION).start();
-		}
 	}
 
 
