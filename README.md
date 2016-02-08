@@ -1,10 +1,10 @@
 # LongTouch for Android (iOS 3D Touch alternative)
 
 ## Installation
-    compile 'cz.kinst.jakub:longtouch:0.1.2'
+    compile 'cz.kinst.jakub:longtouch:0.2'
 
 ## License
-    Copyright 2015 Jakub Kinst & Adam Smolik
+    Copyright 2015 Jakub Kinst & Adam Smolik & Stepan Sanda
     
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

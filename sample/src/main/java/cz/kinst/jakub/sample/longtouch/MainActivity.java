@@ -12,8 +12,6 @@ import cz.kinst.jakub.longtouch.LongTouchHelper;
 
 
 public class MainActivity extends AppCompatActivity {
-
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -27,8 +25,17 @@ public class MainActivity extends AppCompatActivity {
 		});
 		final LongTouchHelper helper = LongTouchHelper.setup((FrameLayout) findViewById(R.id.root));
 		helper.protectTouchOnViews(findViewById(R.id.scroll_view));
-		helper.addViewPopup(findViewById(R.id.target), LayoutInflater.from(this).inflate(R.layout.popup_hello, null));
-		helper.addViewPopup(findViewById(R.id.target2), LayoutInflater.from(this).inflate(R.layout.popup_hello, null));
+		helper.addViewPopup(findViewById(R.id.target), new LongTouchHelper.ContentViewProvider() {
+			@Override
+			public View getView() {
+				return LayoutInflater.from(MainActivity.this).inflate(R.layout.popup_hello, null);
+			}
+		});
+		helper.addViewPopup(findViewById(R.id.target2), new LongTouchHelper.ContentViewProvider() {
+			@Override
+			public View getView() {
+				return LayoutInflater.from(MainActivity.this).inflate(R.layout.popup_hello, null);
+			}
+		});
 	}
-
 }

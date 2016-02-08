@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewAnimationUtils;
+import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
@@ -19,14 +20,16 @@ import java.util.Map;
 
 
 public class LongTouchHelper {
-	public static final long DEFAULT_ANIMATION_DURATION = 500;
+	public static final long DEFAULT_SHOW_ANIMATION_DURATION = 500;
+	public static final long DEFAULT_HIDE_ANIMATION_DURATION = 300;
 	public static final long BLUR_ANIMATION_DURATION = 400;
 	public static final int DEFAULT_LONG_PRESS_DELAY_MILLIS = 200;
 	public static final int DEFAULT_BLUR_RADIUS = 5;
 
 	private Map<View, Boolean> mPopupVisible = new HashMap<>();
 	private Context mContext;
-	private Map<View, View> mPopupContents = new HashMap<>();
+	private Map<View, ContentViewProvider> mPopupContentProviders = new HashMap<>();
+	private Map<View, View> mPopupContentViews = new HashMap<>();
 	private int mOriginX;
 	private int mOriginY;
 	private boolean mBlurEnabled = true;
@@ -39,45 +42,72 @@ public class LongTouchHelper {
 
 		@Override
 		public Animator getShowAnimator(View content) {
+			Animator defaultAnimator = null;
 			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && isRevealEffectEnabled()) {
 				int finalRadius = Math.max(content.getWidth(), content.getHeight());
 				Animator anim = ViewAnimationUtils.createCircularReveal(content, mOriginX, mOriginY - getStatusBarHeight(), 0, finalRadius);
-				anim.setDuration(DEFAULT_ANIMATION_DURATION);
-				return anim;
-			} else {
-				content.setPivotX(mOriginX);
-				content.setPivotY(mOriginY - getStatusBarHeight());
-				AnimatorSet animatorSet = new AnimatorSet();
-				animatorSet.setDuration(DEFAULT_ANIMATION_DURATION);
-				animatorSet.playTogether(ObjectAnimator.ofFloat(content, "scaleX", 0f, 1f), ObjectAnimator.ofFloat(content, "scaleY", 0f, 1f));
-				return animatorSet;
+				defaultAnimator = anim;
 			}
+
+			AnimatorSet animatorSet = new AnimatorSet();
+			content.setPivotX(mOriginX);
+			content.setPivotY(mOriginY - getStatusBarHeight());
+			ObjectAnimator scaleXanimator = ObjectAnimator.ofFloat(content, "scaleX", 0.3f, 1f);
+			scaleXanimator.setInterpolator(new OvershootInterpolator());
+
+			ObjectAnimator scaleYanimator = ObjectAnimator.ofFloat(content, "scaleY", 0.3f, 1f);
+			scaleYanimator.setInterpolator(new OvershootInterpolator());
+
+			ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(content, "alpha", 1f);
+			alphaAnimator.setDuration(0);
+
+			if(defaultAnimator != null)
+				animatorSet.playTogether(defaultAnimator, scaleXanimator, scaleYanimator, alphaAnimator);
+			else
+				animatorSet.playTogether(scaleXanimator, scaleYanimator, alphaAnimator);
+
+			return animatorSet;
 		}
 
 
 		@Override
 		public Animator getHideAnimator(View content) {
+
+			Animator defaultAnimator = null;
 			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && isRevealEffectEnabled()) {
 				int finalRadius = Math.max(content.getWidth(), content.getHeight());
 				Animator anim = ViewAnimationUtils.createCircularReveal(content, mOriginX, mOriginY - getStatusBarHeight(), finalRadius, 0);
-				anim.setDuration(DEFAULT_ANIMATION_DURATION);
-				return anim;
-			} else {
-				content.setPivotX(mOriginX);
-				content.setPivotY(mOriginY - getStatusBarHeight());
-				AnimatorSet animatorSet = new AnimatorSet();
-				animatorSet.setDuration(DEFAULT_ANIMATION_DURATION);
-				animatorSet.playTogether(ObjectAnimator.ofFloat(content, "scaleX", 1f, 0f), ObjectAnimator.ofFloat(content, "scaleY", 1f, 0f));
-				return animatorSet;
+				anim.setDuration(DEFAULT_SHOW_ANIMATION_DURATION);
+				defaultAnimator = anim;
 			}
+			content.setPivotX(mOriginX);
+			content.setPivotY(mOriginY - getStatusBarHeight());
+			AnimatorSet animatorSet = new AnimatorSet();
+			ObjectAnimator scaleXanimator = ObjectAnimator.ofFloat(content, "scaleX", 1f, 0.5f);
+			ObjectAnimator scaleYanimator = ObjectAnimator.ofFloat(content, "scaleY", 1f, 0.5f);
+			ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(content, "alpha", 1f, 0);
+
+
+			if(defaultAnimator != null)
+				animatorSet.playTogether(defaultAnimator, scaleXanimator, scaleYanimator, alphaAnimator);
+			else
+				animatorSet.playTogether(scaleXanimator, scaleYanimator, alphaAnimator);
+			return animatorSet;
 		}
 	};
 	private Handler mHandler = new Handler();
+	private long mShowAnimationDuration = DEFAULT_SHOW_ANIMATION_DURATION;
+	private long mHideAnimationDuration = DEFAULT_HIDE_ANIMATION_DURATION;
 
 
 	public interface PopupAnimationProvider {
 		Animator getShowAnimator(View popup);
 		Animator getHideAnimator(View popup);
+	}
+
+
+	public interface ContentViewProvider {
+		View getView();
 	}
 
 
@@ -182,13 +212,11 @@ public class LongTouchHelper {
 	}
 
 
-	public LongTouchHelper addViewPopup(final View target, View contentView) {
+	public LongTouchHelper addViewPopup(final View target, ContentViewProvider contentViewProvider) {
 		if(mContext == null)
 			mContext = target.getContext();
 
-		View popupContent = LayoutInflater.from(target.getContext()).inflate(R.layout.popup_content, null);
-		((FrameLayout) popupContent.findViewById(R.id.popup_content)).addView(contentView);
-		mPopupContents.put(target, popupContent);
+		mPopupContentProviders.put(target, contentViewProvider);
 		target.setOnTouchListener(new View.OnTouchListener() {
 			private Runnable mRunnable = new Runnable() {
 				@Override
@@ -230,8 +258,29 @@ public class LongTouchHelper {
 
 
 	public void removeViewPopup(View target) {
-		mPopupContents.remove(target);
+		mPopupContentProviders.remove(target);
+		mPopupContentViews.remove(target);
 		mPopupVisible.remove(target);
+	}
+
+
+	public long getShowAnimationDuration() {
+		return mShowAnimationDuration;
+	}
+
+
+	public void setShowAnimationDuration(long showAnimationDuration) {
+		mShowAnimationDuration = showAnimationDuration;
+	}
+
+
+	public long getHideAnimationDuration() {
+		return mHideAnimationDuration;
+	}
+
+
+	public void setHideAnimationDuration(long hideAnimationDuration) {
+		mHideAnimationDuration = hideAnimationDuration;
 	}
 
 
@@ -256,7 +305,11 @@ public class LongTouchHelper {
 
 	private void show(View target) {
 		if(isPopupVisible(target)) return;
-		final View popupContent = mPopupContents.get(target);
+
+		final View popupContent = LayoutInflater.from(target.getContext()).inflate(R.layout.popup_content, null);
+		((FrameLayout) popupContent.findViewById(R.id.popup_content)).addView(mPopupContentProviders.get(target).getView());
+		mPopupContentViews.put(target, popupContent);
+
 		if(isBlurEnabled()) {
 			((ImageView) popupContent.findViewById(R.id.blur_container)).setImageBitmap(BlurUtility.getBlurredViewBitmap(getViewToBlur(), getBlurRadius()));
 			popupContent.findViewById(R.id.blur_container).setAlpha(0);
@@ -270,7 +323,9 @@ public class LongTouchHelper {
 			@Override
 			public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
 				v.removeOnLayoutChangeListener(this);
-				getPopupAnimationProvider().getShowAnimator(popupContent.findViewById(R.id.popup_content)).start();
+				Animator animator = getPopupAnimationProvider().getShowAnimator(popupContent.findViewById(R.id.popup_content));
+				animator.setDuration(getShowAnimationDuration());
+				animator.start();
 			}
 		});
 		if(isHapticFeedbackEnabled())
@@ -285,12 +340,13 @@ public class LongTouchHelper {
 
 	private void hide(final View target) {
 		if(!isPopupVisible(target)) return;
-		final View popupContent = mPopupContents.get(target);
+		final View popupContent = mPopupContentViews.get(target);
 
 		if(isBlurEnabled())
 			popupContent.findViewById(R.id.blur_container).animate().alpha(0f).setDuration(BLUR_ANIMATION_DURATION).start();
 
 		Animator animator = getPopupAnimationProvider().getHideAnimator(popupContent.findViewById(R.id.popup_content));
+		animator.setDuration(getHideAnimationDuration());
 		animator.addListener(new Animator.AnimatorListener() {
 			@Override
 			public void onAnimationStart(Animator animation) {
