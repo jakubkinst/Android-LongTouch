@@ -8,12 +8,12 @@
 		android:id="@+id/blur_container"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
+		android:clickable="true"
 		android:scaleType="fitXY"/>
 
 	<FrameLayout
 		android:id="@+id/popup_content"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent">
-
 	</FrameLayout>
 </FrameLayout>
