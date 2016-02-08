@@ -27,13 +27,13 @@ public class MainActivity extends AppCompatActivity {
 		helper.protectTouchOnViews(findViewById(R.id.scroll_view));
 		helper.addViewPopup(findViewById(R.id.target), new LongTouchHelper.ContentViewProvider() {
 			@Override
-			public View getView() {
+			public View getPopupContentView() {
 				return LayoutInflater.from(MainActivity.this).inflate(R.layout.popup_hello, null);
 			}
 		});
 		helper.addViewPopup(findViewById(R.id.target2), new LongTouchHelper.ContentViewProvider() {
 			@Override
-			public View getView() {
+			public View getPopupContentView() {
 				return LayoutInflater.from(MainActivity.this).inflate(R.layout.popup_hello, null);
 			}
 		});

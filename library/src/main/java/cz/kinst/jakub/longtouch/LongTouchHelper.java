@@ -107,7 +107,7 @@ public class LongTouchHelper {
 
 
 	public interface ContentViewProvider {
-		View getView();
+		View getPopupContentView();
 	}
 
 
@@ -305,25 +305,25 @@ public class LongTouchHelper {
 
 	private void show(View target) {
 		if(isPopupVisible(target)) return;
-
-		final View popupContent = LayoutInflater.from(target.getContext()).inflate(R.layout.popup_content, null);
-		((FrameLayout) popupContent.findViewById(R.id.popup_content)).addView(mPopupContentProviders.get(target).getView());
-		mPopupContentViews.put(target, popupContent);
+		View popupContent = mPopupContentProviders.get(target).getPopupContentView();
+		final View popupView = LayoutInflater.from(target.getContext()).inflate(R.layout.popup_content, null);
+		((FrameLayout) popupView.findViewById(R.id.popup_content)).addView(popupContent);
+		mPopupContentViews.put(target, popupView);
 
 		if(isBlurEnabled()) {
-			((ImageView) popupContent.findViewById(R.id.blur_container)).setImageBitmap(BlurUtility.getBlurredViewBitmap(getViewToBlur(), getBlurRadius()));
-			popupContent.findViewById(R.id.blur_container).setAlpha(0);
-			popupContent.findViewById(R.id.blur_container).animate().alpha(1f).setDuration(BLUR_ANIMATION_DURATION).start();
+			((ImageView) popupView.findViewById(R.id.blur_container)).setImageBitmap(BlurUtility.getBlurredViewBitmap(getViewToBlur(), getBlurRadius()));
+			popupView.findViewById(R.id.blur_container).setAlpha(0);
+			popupView.findViewById(R.id.blur_container).animate().alpha(1f).setDuration(BLUR_ANIMATION_DURATION).start();
 		}
-		mContainer.addView(popupContent);
-		popupContent.setFocusable(true);
+		mContainer.addView(popupView);
+		popupView.setFocusable(true);
 		mPopupVisible.put(target, true);
 
-		popupContent.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+		popupView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
 			@Override
 			public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
 				v.removeOnLayoutChangeListener(this);
-				Animator animator = getPopupAnimationProvider().getShowAnimator(popupContent.findViewById(R.id.popup_content));
+				Animator animator = getPopupAnimationProvider().getShowAnimator(popupView.findViewById(R.id.popup_content));
 				animator.setDuration(getShowAnimationDuration());
 				animator.start();
 			}
@@ -340,12 +340,12 @@ public class LongTouchHelper {
 
 	private void hide(final View target) {
 		if(!isPopupVisible(target)) return;
-		final View popupContent = mPopupContentViews.get(target);
+		final View popupView = mPopupContentViews.get(target);
 
 		if(isBlurEnabled())
-			popupContent.findViewById(R.id.blur_container).animate().alpha(0f).setDuration(BLUR_ANIMATION_DURATION).start();
+			popupView.findViewById(R.id.blur_container).animate().alpha(0f).setDuration(BLUR_ANIMATION_DURATION).start();
 
-		Animator animator = getPopupAnimationProvider().getHideAnimator(popupContent.findViewById(R.id.popup_content));
+		Animator animator = getPopupAnimationProvider().getHideAnimator(popupView.findViewById(R.id.popup_content));
 		animator.setDuration(getHideAnimationDuration());
 		animator.addListener(new Animator.AnimatorListener() {
 			@Override
@@ -356,8 +356,9 @@ public class LongTouchHelper {
 
 			@Override
 			public void onAnimationEnd(Animator animation) {
+				((FrameLayout) popupView.findViewById(R.id.popup_content)).removeAllViews();
 				getViewToBlur().destroyDrawingCache();
-				mContainer.removeView(popupContent);
+				mContainer.removeView(popupView);
 				mPopupVisible.put(target, false);
 			}
 
