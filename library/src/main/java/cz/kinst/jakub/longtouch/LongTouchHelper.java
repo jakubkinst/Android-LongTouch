@@ -30,14 +30,17 @@ public class LongTouchHelper {
 	private Context mContext;
 	private Map<View, ContentViewProvider> mPopupContentProviders = new HashMap<>();
 	private Map<View, View> mPopupContentViews = new HashMap<>();
-	private int mOriginX;
-	private int mOriginY;
+	private int mDownX, mDownY;
 	private boolean mBlurEnabled = true;
 	private float mBlurRadius = DEFAULT_BLUR_RADIUS;
 	private boolean mHapticFeedbackEnabled = true;
 	private int mLongPressDelay = DEFAULT_LONG_PRESS_DELAY_MILLIS;
 	private FrameLayout mContainer;
 	private boolean mRevealEffectEnabled = true;
+	private Handler mHandler = new Handler();
+	private long mShowAnimationDuration = DEFAULT_SHOW_ANIMATION_DURATION;
+	private long mHideAnimationDuration = DEFAULT_HIDE_ANIMATION_DURATION;
+	private int mUpX, mUpY;
 	private PopupAnimationProvider mPopupAnimationProvider = new PopupAnimationProvider() {
 
 		@Override
@@ -45,13 +48,13 @@ public class LongTouchHelper {
 			Animator defaultAnimator = null;
 			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && isRevealEffectEnabled()) {
 				int finalRadius = Math.max(content.getWidth(), content.getHeight());
-				Animator anim = ViewAnimationUtils.createCircularReveal(content, mOriginX, mOriginY - getStatusBarHeight(), 0, finalRadius);
+				Animator anim = ViewAnimationUtils.createCircularReveal(content, mDownX, mDownY, 0, finalRadius);
 				defaultAnimator = anim;
 			}
 
 			AnimatorSet animatorSet = new AnimatorSet();
-			content.setPivotX(mOriginX);
-			content.setPivotY(mOriginY - getStatusBarHeight());
+			content.setPivotX(mDownX);
+			content.setPivotY(mDownY);
 			ObjectAnimator scaleXanimator = ObjectAnimator.ofFloat(content, "scaleX", 0.3f, 1f);
 			scaleXanimator.setInterpolator(new OvershootInterpolator());
 
@@ -76,12 +79,12 @@ public class LongTouchHelper {
 			Animator defaultAnimator = null;
 			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && isRevealEffectEnabled()) {
 				int finalRadius = Math.max(content.getWidth(), content.getHeight());
-				Animator anim = ViewAnimationUtils.createCircularReveal(content, mOriginX, mOriginY - getStatusBarHeight(), finalRadius, 0);
+				Animator anim = ViewAnimationUtils.createCircularReveal(content, mUpX, mUpY, finalRadius, 0);
 				anim.setDuration(DEFAULT_SHOW_ANIMATION_DURATION);
 				defaultAnimator = anim;
 			}
-			content.setPivotX(mOriginX);
-			content.setPivotY(mOriginY - getStatusBarHeight());
+			content.setPivotX(mUpX);
+			content.setPivotY(mUpY);
 			AnimatorSet animatorSet = new AnimatorSet();
 			ObjectAnimator scaleXanimator = ObjectAnimator.ofFloat(content, "scaleX", 1f, 0.5f);
 			ObjectAnimator scaleYanimator = ObjectAnimator.ofFloat(content, "scaleY", 1f, 0.5f);
@@ -95,9 +98,6 @@ public class LongTouchHelper {
 			return animatorSet;
 		}
 	};
-	private Handler mHandler = new Handler();
-	private long mShowAnimationDuration = DEFAULT_SHOW_ANIMATION_DURATION;
-	private long mHideAnimationDuration = DEFAULT_HIDE_ANIMATION_DURATION;
 
 
 	public interface PopupAnimationProvider {
@@ -201,8 +201,11 @@ public class LongTouchHelper {
 				@Override
 				public boolean onTouch(View v, MotionEvent event) {
 					if(isAnyPopupVisible()) {
-						if(event.getAction() == MotionEvent.ACTION_UP)
+						if(event.getAction() == MotionEvent.ACTION_UP) {
+							mUpX = Math.round(event.getRawX() - getContainerOffsetX());
+							mUpY = Math.round(event.getRawY() - getContainerOffsetY());
 							hideAll();
+						}
 						return true;
 					} else return false;
 				}
@@ -232,6 +235,8 @@ public class LongTouchHelper {
 				if(action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_HOVER_EXIT) {
 					mHandler.removeCallbacks(mRunnable);
 					if(isPopupVisible(v)) {
+						mUpX = Math.round(event.getRawX() - getContainerOffsetX());
+						mUpY = Math.round(event.getRawY() - getContainerOffsetY());
 						hide(target);
 						v.setEnabled(false);
 						mHandler.post(new Runnable() {
@@ -246,8 +251,8 @@ public class LongTouchHelper {
 					mHandler.removeCallbacks(mRunnable);
 				}
 				if(action == MotionEvent.ACTION_DOWN) {
-					mOriginX = Math.round(event.getRawX());
-					mOriginY = Math.round(event.getRawY());
+					mDownX = Math.round(event.getRawX() - getContainerOffsetX());
+					mDownY = Math.round(event.getRawY() - getContainerOffsetY());
 					mHandler.postDelayed(mRunnable, getLongPressDelay());
 				}
 				return false;
@@ -284,10 +289,37 @@ public class LongTouchHelper {
 	}
 
 
-	private int getStatusBarHeight() {
+	public int getDownX() {
+		return mDownX;
+	}
+
+
+	public int getDownY() {
+		return mDownY;
+	}
+
+
+	public int getUpX() {
+		return mUpX;
+	}
+
+
+	public int getUpY() {
+		return mUpY;
+	}
+
+
+	private int getContainerOffsetY() {
 		int[] location = new int[2];
 		mContainer.getLocationInWindow(location);
 		return location[1];
+	}
+
+
+	private int getContainerOffsetX() {
+		int[] location = new int[2];
+		mContainer.getLocationInWindow(location);
+		return location[0];
 	}
 
 
