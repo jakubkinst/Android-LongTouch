@@ -79,12 +79,12 @@ public class LongTouchHelper {
 			Animator defaultAnimator = null;
 			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && isRevealEffectEnabled()) {
 				int finalRadius = Math.max(content.getWidth(), content.getHeight());
-				Animator anim = ViewAnimationUtils.createCircularReveal(content, mUpX, mUpY, finalRadius, 0);
+				Animator anim = ViewAnimationUtils.createCircularReveal(content, getDownX(), getDownY(), finalRadius, 0);
 				anim.setDuration(DEFAULT_SHOW_ANIMATION_DURATION);
 				defaultAnimator = anim;
 			}
-			content.setPivotX(mUpX);
-			content.setPivotY(mUpY);
+			content.setPivotX(getDownX());
+			content.setPivotY(getDownY());
 			AnimatorSet animatorSet = new AnimatorSet();
 			ObjectAnimator scaleXanimator = ObjectAnimator.ofFloat(content, "scaleX", 1f, 0.5f);
 			ObjectAnimator scaleYanimator = ObjectAnimator.ofFloat(content, "scaleY", 1f, 0.5f);

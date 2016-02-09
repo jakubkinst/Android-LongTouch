@@ -2,7 +2,7 @@
 ![Preview](extras/preview.gif)
 
 ## Installation
-    compile 'cz.kinst.jakub:longtouch:0.3'
+    compile 'cz.kinst.jakub:longtouch:0.3.1'
     
 ## How to use
 1. Create a `LongTouchHelper` instance in your Activity/Fragment/ViewModel
