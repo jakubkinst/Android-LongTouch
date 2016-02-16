@@ -108,6 +108,7 @@ public class LongTouchHelper {
 
 	public interface ContentViewProvider {
 		View getPopupContentView();
+        void onTouch(MotionEvent event);
 	}
 
 
@@ -206,6 +207,7 @@ public class LongTouchHelper {
 							mUpY = Math.round(event.getRawY() - getContainerOffsetY());
 							hideAll();
 						}
+                        sendMotionEventToVisiblePopupViews(event);
 						return true;
 					} else return false;
 				}
@@ -232,6 +234,7 @@ public class LongTouchHelper {
 			@Override
 			public boolean onTouch(final View v, MotionEvent event) {
 				int action = event.getActionMasked();
+                sendMotionEventToVisiblePopupViews(event);
 				if(action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_HOVER_EXIT) {
 					mHandler.removeCallbacks(mRunnable);
 					if(isPopupVisible(v)) {
@@ -307,6 +310,14 @@ public class LongTouchHelper {
 	public int getUpY() {
 		return mUpY;
 	}
+
+    private void sendMotionEventToVisiblePopupViews(MotionEvent event) {
+        for (Map.Entry<View, Boolean> entry : mPopupVisible.entrySet()) {
+            if (entry.getValue()) {
+                mPopupContentProviders.get(entry.getKey()).onTouch(event);
+            }
+        }
+    }
 
 
 	private int getContainerOffsetY() {

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
@@ -30,11 +31,25 @@ public class MainActivity extends AppCompatActivity {
 			public View getPopupContentView() {
 				return LayoutInflater.from(MainActivity.this).inflate(R.layout.popup_hello, null);
 			}
+
+
+			@Override
+			public void onTouch(MotionEvent event)
+			{
+				// handle the touch event here
+			}
 		});
 		helper.addViewPopup(findViewById(R.id.target2), new LongTouchHelper.ContentViewProvider() {
 			@Override
 			public View getPopupContentView() {
 				return LayoutInflater.from(MainActivity.this).inflate(R.layout.popup_hello, null);
+			}
+
+
+			@Override
+			public void onTouch(MotionEvent event)
+			{
+				// handle the touch event here
 			}
 		});
 	}
