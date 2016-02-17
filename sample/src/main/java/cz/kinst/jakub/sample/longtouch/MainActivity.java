@@ -34,8 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 			@Override
-			public void onTouch(MotionEvent event)
-			{
+			public void onPopupContentTouch(MotionEvent event) {
 				// handle the touch event here
 			}
 		});
@@ -47,8 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 			@Override
-			public void onTouch(MotionEvent event)
-			{
+			public void onPopupContentTouch(MotionEvent event) {
 				// handle the touch event here
 			}
 		});
